@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Health_Booster</string>
+    <string name="app_name">Health Booster</string>
     <string name="Total_Points">Total Points:</string>
     <string name="instructions">Instructions: Go to the marked location to get 1 point!</string>
     <string name="refresh_task">Refresh Destination</string>
