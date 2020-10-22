@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">健康寳</string>
+    <string name="Total_Points">總分:</string>
+    <string name="instructions">玩法: 走到標示的地方以取得1分！</string>
+    <string name="refresh_task">刷新標示</string>
+</resources>
