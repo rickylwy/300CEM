@@ -19,6 +19,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -26,15 +28,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private MapView mapView;
     private GoogleMap googleMap;
-    private Location location;
+    private LatLng latLng;
     private Circle circle;
+    private LatLng taskLatLng;
+    private Marker marker;
 
     private final Handler locationHandler = new Handler();
     private final Runnable locationUpdater = new Runnable() {
         @Override
         public void run() {
             updateLocation();
-            locationHandler.postDelayed(this, 10000);
+            locationHandler.postDelayed(this, 5000);
         }
     };
 
@@ -106,8 +110,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         googleMap.setMinZoomPreference(15);
-        LatLng ny = new LatLng(22.438050, 114.014290);
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(ny));
 
         locationHandler.postDelayed(locationUpdater, 0);
     }
@@ -116,27 +118,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             Task<Location> locationResult = LocationServices.getFusedLocationProviderClient(this).getLastLocation();
-            locationResult.addOnCompleteListener(this, new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        // Set the map's camera position to the current location of the device.
-                        location = (Location) task.getResult();
-                        if (location != null)
-                        {
-                            if (circle != null)
-                            {
-                                circle.remove();
-                            }
-                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            circle = googleMap.addCircle(new CircleOptions()
-                                    .center(latLng)
-                                    .radius(30)
-                                    .strokeColor(Color.RED)
-                                    .fillColor(Color.BLUE));
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                        }
+            locationResult.addOnCompleteListener(this, (OnCompleteListener<Location>) task -> {
+                if (task.isSuccessful()) {
+                    // Set the map's camera position to the current location of the device.
+                    if (circle != null)
+                    {
+                        circle.remove();
                     }
+                    latLng = new LatLng(task.getResult().getLatitude(), task.getResult().getLongitude());
+                    circle = googleMap.addCircle(new CircleOptions()
+                            .center(latLng)
+                            .radius(30)
+                            .strokeColor(Color.RED)
+                            .fillColor(Color.BLUE));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    updateTask();
                 }
             });
         }
@@ -145,6 +141,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
+        }
+    }
+
+    protected void updateTask()
+    {
+        if (latLng != null)
+        {
+            taskLatLng = new LatLng(Math.random()*0.00500*(1 - (int)(Math.random()*3)) + latLng.latitude,
+                    Math.random()*0.00500*(1 - (int)(Math.random()*3)) + latLng.longitude);
+            if (marker != null)
+            {
+                marker.remove();
+            }
+            marker = googleMap.addMarker(new MarkerOptions().position(taskLatLng));
         }
     }
 }
