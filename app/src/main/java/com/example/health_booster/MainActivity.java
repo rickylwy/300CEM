@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -132,7 +133,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             .strokeColor(Color.RED)
                             .fillColor(Color.BLUE));
                     googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    updateTask();
+                    if (taskLatLng == null)
+                    {
+                        updateTask(null);
+                    }
                 }
             });
         }
@@ -144,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    protected void updateTask()
+    public void updateTask(View view)
     {
         if (latLng != null)
         {
