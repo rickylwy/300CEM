@@ -220,4 +220,68 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 ((TextView)findViewById(R.id.textView)).getText().toString()
                         .replaceAll(":.*+", ": " + newScore));
     }
+
+    public MapView getMapView() {
+        return mapView;
+    }
+
+    public void setMapView(MapView mapView) {
+        this.mapView = mapView;
+    }
+
+    public GoogleMap getGoogleMap() {
+        return googleMap;
+    }
+
+    public void setGoogleMap(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+    }
+
+    public LatLng getLatLng() {
+        return latLng;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
+    public Circle getCircle() {
+        return circle;
+    }
+
+    public void setCircle(Circle circle) {
+        this.circle = circle;
+    }
+
+    public LatLng getTaskLatLng() {
+        return taskLatLng;
+    }
+
+    public void setTaskLatLng(LatLng taskLatLng) {
+        this.taskLatLng = taskLatLng;
+    }
+
+    public Marker getMarker() {
+        return marker;
+    }
+
+    public void setMarker(Marker marker) {
+        this.marker = marker;
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
+    }
+
+    public void setSharedPreferences(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
+    }
+
+    public Handler getLocationHandler() {
+        return locationHandler;
+    }
+
+    public Runnable getLocationUpdater() {
+        return locationUpdater;
+    }
 }
