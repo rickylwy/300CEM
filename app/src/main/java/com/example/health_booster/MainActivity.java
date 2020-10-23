@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -29,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     private MapView mapView;
     private GoogleMap googleMap;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng taskLatLng;
     private Marker marker;
     private SharedPreferences sharedPreferences;
+    private LocationManager locationManager;
 
     //Here use Handler class for continuous location update logic
     private final Handler locationHandler = new Handler();
@@ -66,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle("MapViewBundleKey");
         }
+
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(mapViewBundle);
@@ -139,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             //Get device's current location by Google Service API
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this);
             Task<Location> locationResult = LocationServices.getFusedLocationProviderClient(this).getLastLocation();
             //Async get location, need use callback to handle
             locationResult.addOnCompleteListener(this, (OnCompleteListener<Location>) task -> {
@@ -283,5 +289,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public Runnable getLocationUpdater() {
         return locationUpdater;
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+
     }
 }
