@@ -4,4 +4,5 @@
     <string name="Total_Points">Total Points:</string>
     <string name="instructions">Instructions: Go to the marked location to get 1 point!</string>
     <string name="refresh_task">Refresh Destination</string>
+    <string name="task_completed">Task Completed!!! New task is assigned.</string>
 </resources>

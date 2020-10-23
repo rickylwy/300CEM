@@ -1,12 +1,16 @@
 package com.example.health_booster;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,13 +37,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Circle circle;
     private LatLng taskLatLng;
     private Marker marker;
+    private SharedPreferences sharedPreferences;
 
     private final Handler locationHandler = new Handler();
     private final Runnable locationUpdater = new Runnable() {
         @Override
         public void run() {
             updateLocation();
-            locationHandler.postDelayed(this, 5000);
+            locationHandler.postDelayed(this, 1000);
         }
     };
 
@@ -47,6 +52,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+
+        updateCurrentScore(getCurrentScore());
 
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -126,16 +135,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     {
                         circle.remove();
                     }
-                    latLng = new LatLng(task.getResult().getLatitude(), task.getResult().getLongitude());
-                    circle = googleMap.addCircle(new CircleOptions()
-                            .center(latLng)
-                            .radius(30)
-                            .strokeColor(Color.RED)
-                            .fillColor(Color.BLUE));
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    if (taskLatLng == null)
+                    if (task.getResult() != null)
                     {
-                        updateTask(null);
+                        latLng = new LatLng(task.getResult().getLatitude(), task.getResult().getLongitude());
+                        circle = googleMap.addCircle(new CircleOptions()
+                                .center(latLng)
+                                .radius(30)
+                                .strokeColor(Color.RED)
+                                .fillColor(Color.BLUE));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        if (taskLatLng == null)
+                        {
+                            updateTask(null);
+                        }
+                        else if (Math.abs(taskLatLng.longitude - latLng.longitude) < 0.00050 && Math.abs(taskLatLng.latitude - latLng.latitude) < 0.00050)
+                        {
+                            updateCurrentScore(getCurrentScore() + 1);
+                            updateTask(null);
+                            Toast.makeText(getApplicationContext(), getString(R.string.task_completed), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
             });
@@ -160,5 +178,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
             marker = googleMap.addMarker(new MarkerOptions().position(taskLatLng));
         }
+    }
+
+    protected int getCurrentScore()
+    {
+        return sharedPreferences.getInt("totalScore", 0);
+    }
+
+    protected void updateCurrentScore(int newScore)
+    {
+        sharedPreferences.edit().putInt("totalScore", newScore).commit();
+        ((TextView)findViewById(R.id.textView)).setText(
+                ((TextView)findViewById(R.id.textView)).getText().toString()
+                        .replaceAll(":.*", ": " + newScore));
     }
 }
